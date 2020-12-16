@@ -13,6 +13,7 @@ rlibc = "1.0.0"
 spin = "0.7.0"
 bootloader = "0.9.11"
 volatile = "0.2.6"
+pic8259_simple = "0.2.0"
 
 [package.metadata.bootimage]
 test-args = [
@@ -26,3 +27,12 @@ test-timeout = 300
 [dependencies.lazy_static]
 version = "1.4"
 features = ["spin_no_std"]
+
+
+[[test]]
+name = "should_panic"
+harness = false
+
+[[test]]
+name = "stack_overflow"
+harness = false
