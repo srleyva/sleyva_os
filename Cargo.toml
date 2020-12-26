@@ -14,6 +14,7 @@ spin = "0.7.0"
 bootloader = "0.9.11"
 volatile = "0.2.6"
 pic8259_simple = "0.2.0"
+pc-keyboard = "0.5.1"
 
 [package.metadata.bootimage]
 test-args = [
@@ -35,4 +36,8 @@ harness = false
 
 [[test]]
 name = "stack_overflow"
+harness = false
+
+[[test]]
+name = "page_fault"
 harness = false
