@@ -1,4 +1,5 @@
 #![no_std]
+#![feature(asm)]
 #![cfg_attr(test, no_main)]
 #![feature(custom_test_frameworks)]
 #![test_runner(crate::test_runner)]
@@ -13,12 +14,27 @@ pub mod gdt;
 pub mod interrupts;
 pub mod serial;
 pub mod vga_buffer;
+pub mod cpu_info;
 
 pub fn init() {
     gdt::init();
     interrupts::init_idt();
     unsafe { interrupts::PICS.lock().initialize() };
     x86_64::instructions::interrupts::enable();
+    banner();
+}
+
+fn banner() {
+    let banner = r#"
+   _____ __    ________  ___    _____        ____  _____
+  / ___// /   / ____/\ \/ / |  / /   |      / __ \/ ___/
+  \__ \/ /   / __/    \  /| | / / /| |     / / / /\__ \ 
+ ___/ / /___/ /___    / / | |/ / ___ |    / /_/ /___/ / 
+/____/_____/_____/   /_/  |___/_/  |_|____\____//____/  
+                                    /_____/             "#;
+
+    println!("{}", banner);
+    println!("{}", *cpu_info::CPU_INFO);
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]

@@ -4,13 +4,13 @@
 #![test_runner(sleyva_os::test_runner)]
 #![reexport_test_harness_main = "test_main"]
 
+use bootloader::{BootInfo, entry_point};
 use core::panic::PanicInfo;
 use sleyva_os::println;
 
-#[no_mangle]
-pub extern "C" fn _start() -> ! {
-    println!("Hello World: {}", "sleyva_os");
+entry_point!(kernel_main);
 
+fn kernel_main(boot_info: &'static BootInfo) -> ! {
     sleyva_os::init();
 
     #[cfg(test)]
@@ -31,3 +31,4 @@ fn panic(info: &PanicInfo) -> ! {
 fn panic(info: &PanicInfo) -> ! {
     sleyva_os::test_panic_handler(info)
 }
+
