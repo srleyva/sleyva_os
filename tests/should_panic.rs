@@ -11,7 +11,7 @@ use sleyva_os::{exit_qemu, serial_print, serial_println, QemuExitCode};
 pub extern "C" fn _start() -> ! {
     should_fail();
     serial_println!("[test did not panic]");
-    exit_qemu(QemuExitCode::Success);
+    exit_qemu(QemuExitCode::Failed);
     loop {}
 }
 

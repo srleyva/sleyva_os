@@ -6,12 +6,32 @@
 
 use bootloader::{BootInfo, entry_point};
 use core::panic::PanicInfo;
-use sleyva_os::println;
+use sleyva_os::{println, memory::init};
+use x86_64::{VirtAddr, structures::paging::MapperAllSizes};
 
 entry_point!(kernel_main);
 
 fn kernel_main(boot_info: &'static BootInfo) -> ! {
     sleyva_os::init();
+
+    let mapper = unsafe {init(VirtAddr::new(boot_info.physical_memory_offset))};
+    let addresses = [
+        // VGA Buffer page
+        0xb8000,
+        // code page
+        0x201008,
+        // stack page
+        0x0100_0020_1a10,
+        // virtual address that should be 0x0,
+        boot_info.physical_memory_offset,
+    ];
+
+    for &address in &addresses {
+        let virt = VirtAddr::new(address);
+        let phys = mapper.translate_addr(virt);
+
+        println!("Virtual Address: {:?} => PhysicalAddress: {:?}", virt, phys);
+    }
 
     #[cfg(test)]
     test_main();
