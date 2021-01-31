@@ -14,7 +14,7 @@ entry_point!(kernel_main);
 fn kernel_main(boot_info: &'static BootInfo) -> ! {
     sleyva_os::init();
 
-    let mapper = unsafe {init(VirtAddr::new(boot_info.physical_memory_offset))};
+    let mapper = unsafe {init(boot_info)};
     let addresses = [
         // VGA Buffer page
         0xb8000,

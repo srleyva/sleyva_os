@@ -5,7 +5,9 @@ authors = ["sleyva"]
 edition = "2018"
 
 [features]
-recursive_mapped_memory =[]
+default = ["map_physical_memory"]
+map_physical_memory = []
+recursive_mapped_memory = []
 
 
 
