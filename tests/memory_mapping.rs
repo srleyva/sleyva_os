@@ -4,10 +4,10 @@
 #![test_runner(sleyva_os::test_runner)]
 #![reexport_test_harness_main = "test_main"]
 
-use sleyva_os::{exit_qemu, QemuExitCode, serial_print, serial_println, memory::init};
-use x86_64::{VirtAddr, structures::paging::MapperAllSizes, PhysAddr};
-use bootloader::{BootInfo, entry_point};
+use bootloader::{entry_point, BootInfo};
 use core::panic::PanicInfo;
+use sleyva_os::{exit_qemu, memory::init, serial_print, serial_println, QemuExitCode};
+use x86_64::{structures::paging::Translate, PhysAddr, VirtAddr};
 
 entry_point!(test_kernel_main);
 
@@ -28,12 +28,24 @@ fn test_kernel_main(boot_info: &'static BootInfo) -> ! {
 }
 
 fn test_memory_mapping(boot_info: &'static BootInfo) {
-    let mapper = unsafe {init(boot_info)};
+    let mapper = unsafe { init(boot_info) };
     let expected_address_mappings = [
-        ("IdentityMapped", VirtAddr::new(0xb8000), PhysAddr::new(0xb8000)),
+        (
+            "IdentityMapped",
+            VirtAddr::new(0xb8000),
+            PhysAddr::new(0xb8000),
+        ),
         ("CodePage", VirtAddr::new(0x201008), PhysAddr::new(0x401008)),
-        ("StackPage", VirtAddr::new(0x0100_0020_1a10), PhysAddr::new(0x278a10)),
-        ("Offset", VirtAddr::new(boot_info.physical_memory_offset), PhysAddr::new(0x0)),
+        (
+            "StackPage",
+            VirtAddr::new(0x0100_0020_1a10),
+            PhysAddr::new(0x278a10),
+        ),
+        (
+            "Offset",
+            VirtAddr::new(boot_info.physical_memory_offset),
+            PhysAddr::new(0x0),
+        ),
     ];
 
     for (name, virtual_address, physical_address) in &expected_address_mappings {
@@ -42,7 +54,6 @@ fn test_memory_mapping(boot_info: &'static BootInfo) {
         assert_eq!(mapped_physical_address, *physical_address);
         serial_println!("[Ok]");
     }
-
 }
 
 #[panic_handler]

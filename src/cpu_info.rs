@@ -1,9 +1,9 @@
 use crate::{print, println};
-use lazy_static::lazy_static;
-use core::str::from_utf8;
 use core::fmt;
+use core::str::from_utf8;
+use lazy_static::lazy_static;
 
-lazy_static!{
+lazy_static! {
     pub static ref CPU_INFO: CPUInfo = CPUInfo::new();
 }
 
@@ -24,25 +24,35 @@ pub struct CPUInfo {
 
 impl fmt::Display for CPUInfo {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        write!(f, "manufactor_id: {}\n{}", self.manufactor_id(), self.proc_info())
+        write!(
+            f,
+            "manufactor_id: {}\n{}",
+            self.manufactor_id(),
+            self.proc_info()
+        )
     }
 }
 
 pub struct ProcInfo {
-    eax: u32
+    eax: u32,
 }
 
 impl fmt::Display for ProcInfo {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        write!(f, "stepping_id: {}\nfamily_id: {}\nproc_type: {}\nmodel: {}", self.stepping_id(), self.family_id(), self.processor_type(), self.model())
+        write!(
+            f,
+            "stepping_id: {}\nfamily_id: {}\nproc_type: {}\nmodel: {}",
+            self.stepping_id(),
+            self.family_id(),
+            self.processor_type(),
+            self.model()
+        )
     }
 }
 
 impl ProcInfo {
     fn new(eax: u32, ebx: u32, edx: u32, ecx: u32) -> Self {
-        Self{
-            eax,
-        }
+        Self { eax }
     }
 
     pub fn stepping_id(&self) -> u8 {
@@ -55,11 +65,11 @@ impl ProcInfo {
             family_id + self.extended_family_id()
         } else {
             family_id
-        }
+        };
     }
 
     pub fn extended_family_id(&self) -> u8 {
-        ((self.eax >> 20)) as u8
+        (self.eax >> 20) as u8
     }
 
     pub fn processor_type(&self) -> u8 {
@@ -72,7 +82,7 @@ impl ProcInfo {
             (self.extended_model_id() << 4) + model
         } else {
             model
-        }
+        };
     }
 
     pub fn extended_model_id(&self) -> u8 {
@@ -111,7 +121,7 @@ impl CPUInfo {
             byte_offset -= 8;
             chars[11 - i] = ((registers[registers_index] >> byte_offset) & 0xFF) as u8;
         }
-        return chars
+        return chars;
     }
 
     fn parse_proc_info() -> ProcInfo {
@@ -128,10 +138,10 @@ impl CPUInfo {
             asm!(
                 "cpuid",
                 inout("eax") eax => eax,
-                lateout("ebx") ebx,
                 lateout("edx") edx,
                 lateout("ecx") ecx,
             );
+            asm!("mov {:e}, ebx", out(reg) ebx);
         }
         return (eax, [ebx, edx, ecx]);
     }

@@ -4,17 +4,17 @@
 #![test_runner(sleyva_os::test_runner)]
 #![reexport_test_harness_main = "test_main"]
 
-use bootloader::{BootInfo, entry_point};
+use bootloader::{entry_point, BootInfo};
 use core::panic::PanicInfo;
-use sleyva_os::{println, memory::init};
-use x86_64::{VirtAddr, structures::paging::MapperAllSizes};
+use sleyva_os::{memory::init, println};
+use x86_64::{structures::paging::Translate, VirtAddr};
 
 entry_point!(kernel_main);
 
 fn kernel_main(boot_info: &'static BootInfo) -> ! {
     sleyva_os::init();
 
-    let mapper = unsafe {init(boot_info)};
+    let mapper = unsafe { init(boot_info) };
     let addresses = [
         // VGA Buffer page
         0xb8000,
@@ -51,4 +51,3 @@ fn panic(info: &PanicInfo) -> ! {
 fn panic(info: &PanicInfo) -> ! {
     sleyva_os::test_panic_handler(info)
 }
-
